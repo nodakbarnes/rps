@@ -1,5 +1,4 @@
 function randomChoice() {
-    // Randomly return either ‘Rock’, ‘Paper’ or ‘Scissors’
     const choices = ['rock', 'paper', 'scissors'];
     const randomNumber = Math.floor(Math.random() * choices.length);
     return choices[randomNumber];
@@ -43,47 +42,75 @@ function playRound(playerSelection, computerSelection) {
     return result;
 }
 
-function game() {
-    let playerScore = 0;
-    let computerScore = 0;
-    
-    for (let i = 0; i < 5; i++) {
-        // let playerSelection = prompt(`Round ${i + 1}: Please choose rock, paper or scissors`, randomChoice());
-        // playerSelection = playerSelection.toLowerCase();
-        const playerSelection = randomChoice();
-        const computerSelection = randomChoice();
-        const drawString = `It's a draw. Both chose ${playerSelection}.`;
-        const loseString = `You lose! ${computerSelection} beats ${playerSelection}.`;
-        const winString = `You win! ${playerSelection} beats ${computerSelection}.`;
-        const roundResult = playRound(playerSelection, computerSelection);
+function reportScore(playerScore, computerScore) {
+    const finalScore = document.createElement('p');
+    finalScore.textContent = `Final score - You: ${playerScore}, Computer: ${computerScore}`;
 
-        switch (roundResult) {
-            case 'win':
-                console.log(winString);
-                playerScore += 1;
-                break;
-            case 'lose':
-                console.log(loseString);
-                computerScore += 1;
-                break;
-            case 'draw':
-                console.log(drawString);
-                break;
-            default:
-                console.log('That round did not count');
-                i -= 1;
-        }
+    score.appendChild(finalScore);
 
-    }
-    
-    console.log(`Final score - You: ${playerScore}, Computer: ${computerScore}`);
+    const results = document.createElement('p');
     if (playerScore > computerScore) {
-        console.log("You won the game!");
+        results.textContent = "You won the game!";
     } else if (computerScore > playerScore) {
-        console.log("Computer won the game!");
+        results.textContent = "Computer won the game!";
     } else {
-        console.log("Tie game!");
+        results.textContent = "Tie game!";
     }
+
+    score.appendChild(results);
 }
 
-game();
+function game(playerSelection) {
+    // Clear the scores if end of round
+    if (endRound) {
+        score.innerHTML = '';
+        endRound = false;
+    }
+
+    const computerSelection = randomChoice();
+    const drawString = `It's a draw. Both chose ${playerSelection}.`;
+    const loseString = `You lose! ${computerSelection} beats ${playerSelection}.`;
+    const winString = `You win! ${playerSelection} beats ${computerSelection}.`;
+    const content = document.createElement('p');
+    const roundResult = playRound(playerSelection, computerSelection);
+
+    switch (roundResult) {
+        case 'win':
+            content.textContent = winString;
+            playerScore += 1;
+            break;
+        case 'lose':
+            content.textContent = loseString;
+            computerScore += 1;
+            break;
+        case 'draw':
+            content.textContent = drawString;
+            break;
+        default:
+            content.textContent = 'That round did not count';
+    }
+
+    score.appendChild(content);
+
+    if (playerScore >= 5 || computerScore >= 5) {
+        reportScore(playerScore, computerScore);
+        endRound = true;
+        playerScore = 0;
+        computerScore = 0;
+    }
+
+}
+
+let playerScore = 0;
+let computerScore = 0;
+let endRound = false;
+
+const score = document.querySelector('#score');
+const buttons = document.querySelectorAll('button');
+
+buttons.forEach((button) => {
+
+  button.addEventListener('click', () => {
+    game(button.id);
+  });
+});
